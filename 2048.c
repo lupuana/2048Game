@@ -34,7 +34,7 @@ void menu (int *choice) {
         mvwprintw(wnd, middRow - 2, middCol - 25, "(_{;}_)      |\'._______.'/`-------|||-' (_,_)..-'  .'  ");
         mvwprintw(wnd, middRow - 1, middCol - 25, " (_,_)-------' '._______.'         '-'     `-....--'   ");
         wattroff(wnd, A_BOLD | COLOR_PAIR(2));
-        // afisam opțiunile
+        // afisam optiunile
         for (i = 0; i < 3; i++) {
             if (i == highlight) // evidentiaza optiunea curenta
                 wattron(wnd, COLOR_PAIR(1));
