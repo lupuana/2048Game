@@ -298,7 +298,7 @@ void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
         }
     } // copia matricei initiale
     for (i = 0; i < 4; i++) { // pentru fiecare rand
-        // combinam valorile egale și mutam valorile nenule spre stanga
+        // combinam valorile egale si mutam valorile nenule spre stanga
         for (j = 0; j < 3; j++) {
             if (matrix[i][j] == 0) {
                 continue;
@@ -315,7 +315,7 @@ void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
                 break;
             }
         }
-        // mutam toate valorile nenule în stanga dupa combinare
+        // mutam toate valorile nenule in stanga dupa combinare
         for (j = 0; j < 4; j++) {
             if (matrix[i][j] == 0) {
                 for (k = j + 1; k < 4; k++) {
