@@ -5,25 +5,25 @@
 #include <time.h>
 
 void menu (int *choice) {
+    // to initialize screen
     *choice = -1;
     int nrows, ncols, i;
-    // initializam ecranul
 	WINDOW *wnd = initscr();
-    // recunoastere sageti
+    // to recognize arrows
     keypad(wnd, TRUE);
 	getmaxyx(wnd, nrows, ncols);
-    // activam culoarea
+    // to activate colour
     start_color();
-    int highlight = 0;  // optiunea curenta
+    int highlight = 0;  // index of the current option
     const char options[3][20] = {"New Game", "Resume", "Quit"};
     while (1) {
         clear();
-        // mijlocul ecranului pt meniul meu
+        // the middle of the screen for the menu
         int middRow = (nrows - 5) / 2;
         int middCol = (ncols - 4) / 2;
-        // bold si colorat
+        // bold and color
         wattron(wnd, A_BOLD | COLOR_PAIR(2));
-        // afisam titlul "2048"
+        // show title "2048"
         mvwprintw(wnd, middRow - 9, middCol - 25, "    .`````-.   .-```````-.       ,---.     .-''''-.    ");
         mvwprintw(wnd, middRow - 8, middCol - 25, "   /   ,-.  \\ / ,```````. \\     /,--.|    /  _--.  \\   ");
         mvwprintw(wnd, middRow - 7, middCol - 25, "  (___/  |   ||/ .-./ )  \\|    //_  ||    |_( )_ ' |   ");
@@ -34,20 +34,20 @@ void menu (int *choice) {
         mvwprintw(wnd, middRow - 2, middCol - 25, "(_{;}_)      |\'._______.'/`-------|||-' (_,_)..-'  .'  ");
         mvwprintw(wnd, middRow - 1, middCol - 25, " (_,_)-------' '._______.'         '-'     `-....--'   ");
         wattroff(wnd, A_BOLD | COLOR_PAIR(2));
-        // afisam optiunile
+        // show options menu
         for (i = 0; i < 3; i++) {
-            if (i == highlight) // evidentiaza optiunea curenta
+            if (i == highlight) // highlight current option
                 wattron(wnd, COLOR_PAIR(1));
             else wattron(wnd, COLOR_PAIR(2));
-            // mijlocul pt fiecare optiune
+            // the middle for each option
             middCol = (ncols - strlen(options[i])) / 2;
-            // afisam optiunea
+            // to show the option
             mvwprintw(wnd, middRow + i + 2, middCol, "%s", options[i]);
             wattroff(wnd, COLOR_PAIR(1));
         }
         noecho();
         cbreak();
-        // apasam o tasta
+        // to get user input
         int ch = getch();
         switch (ch) {
             case KEY_UP: {
@@ -58,12 +58,12 @@ void menu (int *choice) {
                 highlight = (highlight + 1) % 3;
                 break;
             }
-            case 10: { // tasta Enter
+            case 10: { // Enter key
                 *choice = highlight;
                 break;
             }
         }
-        // iesim din while daca am selectat o optiune
+        // break the loop if a choice is made
         if (*choice != -1) {
             break;
         }
@@ -113,15 +113,15 @@ void generateNew (char fileName[20], int matrix[][4], int *score, int *bestScore
 
 void moveUp (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int i, j, k;
-    int ok = 0; // mutare invalida
+    int ok = 0; // invalid move
     int before[4][4];
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             before[i][j] = matrix[i][j];
         }
-    } // copia matricei initiale
-    for (j = 0; j < 4; j++) { // pentru fiecare coloana
-        // combinam valorile egale si mutam valorile nenule in sus
+    } // copy of initial matrix
+    for (j = 0; j < 4; j++) { // for each column
+        // to combine equal values and move non-zero values up
         for (i = 0; i < 3; i++) {
             if (matrix[i][j] == 0) {
                 continue;
@@ -132,13 +132,13 @@ void moveUp (char fileName[20], int matrix[][4], int *score, int *bestScore) {
                 }
                 if (matrix[i][j] == matrix[k][j]) {
                     matrix[i][j] *= 2;
-                    *score += matrix[i][j]; // actualizam scorul
+                    *score += matrix[i][j]; // to update the score
                     matrix[k][j] = 0;
                 }
                 break;
             }
         }
-        // mutam toate valorile nenule in sus dupa combinare
+        // to move non-zero values up
         for (i = 0; i < 4; i++) {
             if (matrix[i][j] == 0) {
                 for (k = i + 1; k < 4; k++) {
@@ -151,7 +151,7 @@ void moveUp (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             }
         }
     }
-    // actualizam cel mai bun scor
+    // to update the best score
     if (*score > *bestScore) {
         *bestScore = *score;
     }
@@ -159,7 +159,7 @@ void moveUp (char fileName[20], int matrix[][4], int *score, int *bestScore) {
         for(j = 0; j < 4; j++) {
             if(before[i][j] != matrix[i][j])
             {
-                ok = 1; // s-a facut o modificare
+                ok = 1; // a modification was made
                 break;
             }
         }
@@ -172,15 +172,15 @@ void moveUp (char fileName[20], int matrix[][4], int *score, int *bestScore) {
 
 void moveDown (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int i, j, k;
-    int ok = 0; // mutare invalida
+    int ok = 0; // invalid move
     int before[4][4];
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             before[i][j] = matrix[i][j];
         }
-    } // copia matricei initiale
-    for (j = 0; j < 4; j++) { // pentru fiecare coloana
-        // combinam valorile egale si mutam valorile nenule in jos
+    } // copy of initial matrix
+    for (j = 0; j < 4; j++) { // for each column
+        // to combine equal values and move non-zero values down
         for (i = 3; i > 0; i--) {
             if (matrix[i][j] == 0) {
                 continue;
@@ -191,13 +191,13 @@ void moveDown (char fileName[20], int matrix[][4], int *score, int *bestScore) {
                 }
                 if (matrix[i][j] == matrix[k][j]) {
                     matrix[i][j] *= 2;
-                    *score += matrix[i][j]; // actualizam scorul
+                    *score += matrix[i][j]; // to update the score
                     matrix[k][j] = 0;
                 }
                 break;
             }
         }
-        // mutamm toate valorile nenule in jos dupa combinare
+        // to move non-zero values down
         for (i = 3; i >= 0; i--) {
             if (matrix[i][j] == 0) {
                 for (k = i - 1; k >= 0; k--) {
@@ -210,7 +210,7 @@ void moveDown (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             }
         }
     }
-    // actualizam cel mai bun scor
+    // to update the best score
     if (*score > *bestScore) {
         *bestScore = *score;
     }
@@ -218,7 +218,7 @@ void moveDown (char fileName[20], int matrix[][4], int *score, int *bestScore) {
         for(j = 0; j < 4; j++) {
             if(before[i][j] != matrix[i][j])
             {
-                ok = 1; // s-a facut o modificare
+                ok = 1; // a modification was made
                 break;
             }
         }
@@ -231,15 +231,15 @@ void moveDown (char fileName[20], int matrix[][4], int *score, int *bestScore) {
 
 void moveRight (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int i, j, k;
-    int ok = 0; // mutare invalida
+    int ok = 0; // invalid move
     int before[4][4];
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             before[i][j] = matrix[i][j];
         }
-    } // copia matricei initiale
-    for (i = 0; i < 4; i++) { // pentru fiecare rand
-        // combinam valorile egale și mutam valorile nenule in dreapta
+    } // copy of initial matrix
+    for (i = 0; i < 4; i++) { // for each row
+        // to combine equal values and move non-zero values right
         for (j = 3; j > 0; j--) {
             if (matrix[i][j] == 0) {
                 continue;
@@ -250,13 +250,13 @@ void moveRight (char fileName[20], int matrix[][4], int *score, int *bestScore) 
                 }
                 if (matrix[i][j] == matrix[i][k]) {
                     matrix[i][j] *= 2;
-                    *score += matrix[i][j]; // actualizam scorul
+                    *score += matrix[i][j]; // to update the score
                     matrix[i][k] = 0;
                 }
                 break;
             }
         }
-        // mutam toate valorile nenule in dreapta dupa combinare
+        // to move non-zero values right
         for (j = 3; j >= 0; j--) {
             if (matrix[i][j] == 0) {
                 for (k = j - 1; k >= 0; k--) {
@@ -269,7 +269,7 @@ void moveRight (char fileName[20], int matrix[][4], int *score, int *bestScore) 
             }
         }
     }
-    // actualizam cel mai bun scor
+    // to update the best score
     if (*score > *bestScore) {
         *bestScore = *score;
     }
@@ -277,7 +277,7 @@ void moveRight (char fileName[20], int matrix[][4], int *score, int *bestScore) 
         for(j = 0; j < 4; j++) {
             if(before[i][j] != matrix[i][j])
             {
-                ok = 1; // s-a facut o modificare
+                ok = 1; // a modification was made
                 break;
             }
         }
@@ -290,15 +290,15 @@ void moveRight (char fileName[20], int matrix[][4], int *score, int *bestScore) 
 
 void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int i, j, k;
-    int ok = 0; // mutare invalida
+    int ok = 0; // invalid move
     int before[4][4];
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             before[i][j] = matrix[i][j];
         }
-    } // copia matricei initiale
-    for (i = 0; i < 4; i++) { // pentru fiecare rand
-        // combinam valorile egale si mutam valorile nenule spre stanga
+    } // copy of initial matrix
+    for (i = 0; i < 4; i++) { // for each row
+        // to combine equal values and move non-zero values left
         for (j = 0; j < 3; j++) {
             if (matrix[i][j] == 0) {
                 continue;
@@ -309,13 +309,13 @@ void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
                 }
                 if (matrix[i][j] == matrix[i][k]) {
                     matrix[i][j] *= 2;
-                    *score += matrix[i][j]; // actualizam scorul
+                    *score += matrix[i][j]; // to update the score
                     matrix[i][k] = 0;
                 }
                 break;
             }
         }
-        // mutam toate valorile nenule in stanga dupa combinare
+        // to move non-zero values left
         for (j = 0; j < 4; j++) {
             if (matrix[i][j] == 0) {
                 for (k = j + 1; k < 4; k++) {
@@ -328,7 +328,7 @@ void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             }
         }
     }
-    // actualizam cel mai bun scor
+    // to update the best score
     if (*score > *bestScore) {
         *bestScore = *score;
     }
@@ -336,7 +336,7 @@ void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
         for(j = 0; j < 4; j++) {
             if(before[i][j] != matrix[i][j])
             {
-                ok = 1; // s-a facut o modificare
+                ok = 1; // a modification was made
                 break;
             }
         }
@@ -349,19 +349,19 @@ void moveLeft (char fileName[20], int matrix[][4], int *score, int *bestScore) {
 
 void how (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int nrows, ncols, i, j;
-    // initializam ecranul
+    // to initialize the window
 	WINDOW *wnd = initscr();
 	getmaxyx(wnd, nrows, ncols);
-    // activam colorarea
+    // to activate colouring
     start_color();
     int midRow = nrows / 2;
     int midCol = ncols / 2;
-    // box
+    // a box
     for(i = midRow - 6; i <= midRow + 6; i++) {
         for(j = midCol - 15; j <= midCol + 15; j++) {
             if(i == midRow - 6 || i == midRow + 6
             || j == midCol - 15 || j == midCol + 15) {
-                //border
+                // the border
                 wattron(wnd, COLOR_PAIR(3));
             }
             else wattron(wnd, COLOR_PAIR(4));
@@ -370,7 +370,7 @@ void how (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             wattroff(wnd, COLOR_PAIR(4));
         }
     }
-    //text
+    // the text
     wattron(wnd, COLOR_PAIR(5));
     wattron(wnd, A_BOLD);
     mvwprintw(wnd, midRow - 4, midCol - 13, "HOW TO PLAY");
@@ -385,27 +385,27 @@ void how (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     wattroff(wnd, A_BOLD);
     wattroff(wnd, COLOR_PAIR(5));
     while (getch() != 'q') {
-        //asteapta sa tastam x
+        // waiting for the user to press q
     }
     return;  
 }
 
 void winMessage (int *choice) {
     int nrows, ncols, i, j;
-    // initializam ecranul
+    // to initialize the window
 	WINDOW *wnd = initscr();
 	getmaxyx(wnd, nrows, ncols);
-    // activam colorarea
+    // to activate colouring
     start_color();
     int midRow = nrows / 2;
     int midCol = ncols / 2;
-    // box
+    // the box
     for(i = midRow - 5; i <= midRow + 3; i++) {
         for(j = midCol - 20; j <= midCol + 20; j++) {
             if(i == midRow - 5 || i == midRow + 3
             || j == midCol - 20 || j == midCol + 20
             || j == midCol - 19 || j == midCol + 19) {
-                //border
+                // the border
                 wattron(wnd, COLOR_PAIR(3));
             }
             else wattron(wnd, COLOR_PAIR(4));
@@ -414,7 +414,7 @@ void winMessage (int *choice) {
             wattroff(wnd, COLOR_PAIR(4));
         }
     }
-    //text
+    // the text
     wattron(wnd, COLOR_PAIR(5));
     wattron(wnd, A_BOLD);
     mvwprintw(wnd, midRow - 2, midCol - 4, "YOU WON!");
@@ -422,7 +422,7 @@ void winMessage (int *choice) {
     mvwprintw(wnd, midRow, midCol - 11, "~press Q to go to menu~");
     wattroff(wnd, COLOR_PAIR(5));
     while (getch() != 'q') {
-        //asteapta sa tastam x
+        // waiting for the user to press q
     }
     *choice = 3;
     return;  
@@ -430,20 +430,20 @@ void winMessage (int *choice) {
 
 void loseMessage (int *choice) {
     int nrows, ncols, i, j;
-    // initializam ecranul
+    // to initialize the window
 	WINDOW *wnd = initscr();
 	getmaxyx(wnd, nrows, ncols);
-    // activam colorarea
+    // to activate colouring
     start_color();
     int midRow = nrows / 2;
     int midCol = ncols / 2;
-    // box
+    // the box
     for(i = midRow - 5; i <= midRow + 3; i++) {
         for(j = midCol - 20; j <= midCol + 20; j++) {
             if(i == midRow - 5 || i == midRow + 3
             || j == midCol - 20 || j == midCol + 20
             || j == midCol - 19 || j == midCol + 19) {
-                //border
+                // the border
                 wattron(wnd, COLOR_PAIR(3));
             }
             else wattron(wnd, COLOR_PAIR(4));
@@ -452,7 +452,7 @@ void loseMessage (int *choice) {
             wattroff(wnd, COLOR_PAIR(4));
         }
     }
-    //text
+    // the text
     wattron(wnd, COLOR_PAIR(5));
     wattron(wnd, A_BOLD);
     mvwprintw(wnd, midRow - 2, midCol - 4, "YOU LOST:(");
@@ -460,7 +460,7 @@ void loseMessage (int *choice) {
     mvwprintw(wnd, midRow, midCol - 11, "~press Q to go to menu~");
     wattroff(wnd, COLOR_PAIR(5));
     while (getch() != 'q') {
-        //asteapta sa tastam x
+        // waiting for the user to press q
     }
     *choice = 3;
     return;  
@@ -472,27 +472,27 @@ int winner (int matrix[][4]) {
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             if(matrix[i][j] == 2048) {
-                ok = 1; //winner
+                ok = 1; // winner
                 return ok;
             }
         }
     }
-    return ok; // no winner inca
+    return ok; // no winner yet
 }
 
 int loser(char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int before[4][4];
     int i, j;
-    // cautam spatii goale
+    // looking for an empty space
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             if (matrix[i][j] == 0) {
-                return 0; // am gasit spatiu, not a loser
+                return 0; // an empty space was found
             }
-            before[i][j] = matrix[i][j]; // copiem matricea
+            before[i][j] = matrix[i][j]; // to copy the matrix
         }
     }
-    // verificam daca putem muta
+    // to verify if there is an empty space
     int direction;
     for (direction = 0; direction < 4; direction++) {
         switch (direction) {
@@ -509,18 +509,18 @@ int loser(char fileName[20], int matrix[][4], int *score, int *bestScore) {
                 moveRight(fileName, matrix, score, bestScore); 
                 break;
         }
-        // verificam daca s-a schimbat ceva
+        // checking if the matrix has changed
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
                 if (before[i][j] != matrix[i][j]) {
                     for (i = 0; i < 4; i++) {
                         for (j = 0; j < 4; j++) {
-                            matrix[i][j] = before[i][j]; // copiem matricea
+                            matrix[i][j] = before[i][j]; // to copy the matrix
                         }
                     }
-                    // anulam mutarea
+                    // to cancel the move
                     writeMatrix(fileName, matrix, score, bestScore);
-                    return 0; // mai exista o mutare
+                    return 0; // there is one more possible move
                 }
             }
         }
@@ -530,14 +530,14 @@ int loser(char fileName[20], int matrix[][4], int *score, int *bestScore) {
 
 void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
     int  nrows, ncols, i, j, k, p, m = 0, n = 0;
-    // initializam ecranul
+    // to initialize the window
 	WINDOW *wnd = initscr();
 	getmaxyx(wnd, nrows, ncols);
     nrows++;
     nrows--;
     wrefresh(wnd);
     start_color();
-    // pt mijloc ecran
+    // for the middle of the window
     int middCol = ncols / 2;
     readMatrix(fileName, matrix, score, bestScore);
     for (i = 8; i <= 26; i += 6) {
@@ -545,7 +545,7 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             if (matrix[m][n] == 0) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(6));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(6));
@@ -555,13 +555,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if(matrix[m][n] == 2) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(8));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(8));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(7));
                 mvwprintw(wnd, i, j, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(7));
@@ -569,13 +569,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 4) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(10));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(10));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(9));
                 mvwprintw(wnd, i, j, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(9));
@@ -583,13 +583,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 8) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(12));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(12));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(11));
                 mvwprintw(wnd, i, j, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(11));
@@ -597,13 +597,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 16) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(14));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(14));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(13));
                 mvwprintw(wnd, i, j - 1, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(13));
@@ -611,13 +611,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 32) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(16));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(16));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(15));
                 mvwprintw(wnd, i, j - 1, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(15));
@@ -625,13 +625,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 64) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(18));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(18));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(17));
                 mvwprintw(wnd, i, j - 1, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(17));
@@ -639,13 +639,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 128) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(20));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(20));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(19));
                 mvwprintw(wnd, i, j - 1, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(19));
@@ -653,13 +653,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 256) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(22));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(22));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(21));
                 mvwprintw(wnd, i, j - 1, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(21));
@@ -667,13 +667,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 512) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(24));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(24));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(23));
                 mvwprintw(wnd, i, j - 1, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(23));
@@ -681,13 +681,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 1024) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(26));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(26));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(25));
                 mvwprintw(wnd, i, j - 2, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(25));
@@ -695,13 +695,13 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
             else if (matrix[m][n] == 2048) {
                 for(k = i - 2; k <= i + 2; k++) {
                     for(p = j - 5; p <= j + 5; p++) {
-                        // coloram caseta
+                        // to color the box
                         wattron(wnd, COLOR_PAIR(28));
                         mvwprintw(wnd, k, p, " ");
                         wattroff(wnd, COLOR_PAIR(28));
                     }
                 }
-                // coloram numarul
+                // to color the number
                 wattron(wnd, COLOR_PAIR(27));
                 mvwprintw(wnd, i, j - 2, "%d", matrix[m][n]);
                 wattroff(wnd, COLOR_PAIR(27));
@@ -716,30 +716,30 @@ void show (char fileName[20], int matrix[][4], int *score, int *bestScore) {
 
 void newGame (char fileName[20], int *score, int *bestScore, int *choice, int matrix[][4]) {
     int nrows, ncols, i, j;
-    // initializam ecranul
+    // to initialize the window
 	WINDOW *wnd = initscr();
 	getmaxyx(wnd, nrows, ncols);
     nrows++;
     nrows--;
     raw();
-    // pt mijloc ecran
+    // for the middle of the window
     int middCol = ncols / 2;
-    // activam colorarea
+    // to activate colouring
     start_color(); 
-    // pt data si ora
+    // for date and time
     int datewndWidth = 20, datewndHeight = 3;
     WINDOW *datewnd = newwin(datewndHeight, datewndWidth, 0, ncols - datewndWidth);
     box(datewnd, 0, 0);
-    //generam aleator primele pozitii
+    // to randomly generate 2 numbers
     srand(time(NULL));
-    if(*choice == 0) { //new game
+    if(*choice == 0) { // new game
         int firstRow = rand() % 4;
         int firstCol = rand() % 4;
         matrix[firstRow][firstCol] = (rand() % 2 + 1) * 2;
         int secondRow = rand() % 4;
         int secondCol = rand() % 4;
         while (firstRow == secondRow && firstCol == secondCol) {
-            // vrem sa generam 2 valori, deci avem nevoie de 2 pozitii diferite
+            // randomly generate 2 positions
             secondRow = rand() % 4;
             secondCol = rand() % 4;
         }
@@ -757,7 +757,7 @@ void newGame (char fileName[20], int *score, int *bestScore, int *choice, int ma
         mvwprintw(wnd, 31, middCol - 24, "Press Q to go back to menu");
         wattroff(wnd, A_BOLD | COLOR_PAIR(31));
         readMatrix (fileName, matrix, score, bestScore);
-        // tabel joc
+        // game board
         for (i = 5; i < 30; i++) {
             for (j = (middCol - 24); j <= (middCol + 24) ; j++){
                 if ((i % 6 == 5) || ((j - middCol) % 12 == 0)){
@@ -766,7 +766,7 @@ void newGame (char fileName[20], int *score, int *bestScore, int *choice, int ma
                     mvwprintw(wnd, i, j, " ");
                     wattroff(wnd, COLOR_PAIR(29));
                 }
-                else { // caseta goala
+                else { // empty box
                     wattron(wnd, COLOR_PAIR(30));
                     mvwprintw(wnd, i, j, " ");
                     wattroff(wnd, COLOR_PAIR(30));
@@ -782,15 +782,15 @@ void newGame (char fileName[20], int *score, int *bestScore, int *choice, int ma
         box(datewnd, 0, 0);
         mvwprintw(datewnd, 1, 1, "%s", bufferDate);
         wrefresh(datewnd);
-        if (winner(matrix)) { // verificam pentru castig
+        if (winner(matrix)) { // checking for a winner
             winMessage(choice);
             break;
         }
-        if (loser(fileName, matrix, score, bestScore)) { // verificam pentru pierdut
+        if (loser(fileName, matrix, score, bestScore)) { // checking for a loser
             loseMessage(choice);
             break;
         }
-        // recunoastere sageti
+        // to activate the arrow keys
         keypad(wnd, TRUE);
         noecho();
         cbreak();
@@ -817,7 +817,7 @@ void newGame (char fileName[20], int *score, int *bestScore, int *choice, int ma
                 break;
             case 'q':
             *choice = 3;
-            return; // iesire din joc
+            return; // to leave the game
         }
     }
     endwin();
@@ -825,18 +825,18 @@ void newGame (char fileName[20], int *score, int *bestScore, int *choice, int ma
 
 int main() {
     int bestScore = 0, score = 0, i, j;
-    int choice = -1; // optiunea selectata
+    int choice = -1; // the choice of the user
     int matrix[4][4];
     char fileName[20] = "array.txt";
     initscr();
     start_color();
-    // culori meniu
-    // culoare evidentiata
+    // menu colors
+    // highlighted color
     init_pair(1, COLOR_BLUE, COLOR_WHITE);
-    // culoare normala si titlu
+    // normal color and title
     init_pair(2, COLOR_BLUE, COLOR_BLACK);
-    //pop ups
-    // border
+    // pop ups
+    // the border
     init_color(21, 255, 54, 171);
     init_pair(3, 21, 21);
     // interior
@@ -845,86 +845,86 @@ int main() {
     // text
     init_pair(5, COLOR_WHITE, 22);
 
-    //joc
-    // culoare casute goale
-    init_color(9, 201, 24, 74);  // roz putin mai deschis
+    // the game
+    // empty box color
+    init_color(9, 201, 24, 74);  // light pink
     init_pair(6, 9, 9);
-    // cifra 2
-    init_color(10, 0, 204, 0); //verde
+    // number 2
+    init_color(10, 0, 204, 0); // green
     init_pair(7, COLOR_BLACK, 10); 
-    init_pair(8, 10, 10); // caseta lui 2
-    // cifra 4
+    init_pair(8, 10, 10); // the box for number 2
+    // number 4
     init_pair(9, COLOR_BLACK, COLOR_GREEN); 
-    init_pair(10, COLOR_GREEN, COLOR_GREEN); // caseta lui 4
-    // cifra 8
+    init_pair(10, COLOR_GREEN, COLOR_GREEN); // the box for number 4
+    // number 8
     init_pair(11, COLOR_BLACK, COLOR_BLUE);
     init_pair(12, COLOR_BLUE, COLOR_BLUE);
-    // nr 16
-    init_color(13, 255, 149, 0); //portocaliu
+    // number 16
+    init_color(13, 255, 149, 0); // orange
     init_pair(13, COLOR_WHITE, 13);
     init_pair(14, 13, 13);
-    // nr 32
+    // number 32
     init_pair(15, COLOR_BLACK, COLOR_MAGENTA);
     init_pair(16, COLOR_MAGENTA, COLOR_MAGENTA);
-    // nr 64
-    init_color(15, 0, 149, 255); //albastru
+    // number 64
+    init_color(15, 0, 149, 255); // blue
     init_pair(17, COLOR_BLACK, 15);
     init_pair(18, 15, 15);
-    // nr 128
+    // number 128
     init_pair(19, COLOR_WHITE, COLOR_RED);
     init_pair(20, COLOR_RED, COLOR_RED);
-    // nr 256
-    init_color(17, 255, 0, 255); //roz
+    // number 256
+    init_color(17, 255, 0, 255); // pink
     init_pair(21, COLOR_WHITE, 17);
     init_pair(22, 17, 17);
-    // nr 512
-    init_color(18, 106, 0, 255); //mov
+    // number 512
+    init_color(18, 106, 0, 255); // purple
     init_pair(23, COLOR_BLACK, 18);
     init_pair(24, 18, 18);
-    // nr 1024
-    init_color(19, 250, 66, 16); //alt portocaliu
+    // number 1024
+    init_color(19, 250, 66, 16); // orange
     init_pair(25, COLOR_BLACK, 19);
     init_pair(26, 19, 19);
-    // nr 2048
-    init_color(20, 20, 255, 30); //qlt blue
+    // number 2048
+    init_color(20, 20, 255, 30); // blue
     init_pair(27, COLOR_BLACK, 20);
     init_pair(28, 20, 20);
 
-    //newgame
-    // culoare border
-    init_color(8, 164, 19, 60);  // roz inchis
+    // new game
+    // border color
+    init_color(8, 164, 19, 60);  // dark pink
     init_pair(29, 8, 8);
-    // culoare casute goale
-    init_color(9, 201, 24, 74);  // roz putin mai deschis
+    // empty box color
+    init_color(9, 201, 24, 74);  // light pink
     init_pair(30, 9, 9);
-    // culoare text
+    // text color
     init_pair(31, 9, COLOR_BLACK);
-    // pentru pastrarea bestScore
+    // to keep the best score
     readMatrix(fileName, matrix, &score, &bestScore);
     while (1) {
-        menu(&choice); // afisam meniul
-        if (choice == 0 || choice == 1) { // new game sau resume
+        menu(&choice); // to show the menu
+        if (choice == 0 || choice == 1) { // new game or resume
             if (choice == 0) { // new game
                 for (i = 0; i < 4; i++) {
                     for (j = 0; j < 4; j++) {
                         matrix[i][j] = 0;
                     }
-                } // am resetat matricea
-                score = 0; // am resetat scorul
+                } // resetting the matrix
+                score = 0; // resetting the score
             }
             else if (choice == 1) { // resume
-                // citim starea jocului salvată
+                // to read the state of the game
                 readMatrix(fileName, matrix, &score, &bestScore);
             }
             writeMatrix(fileName, matrix, &score, &bestScore);
             newGame(fileName, &score, &bestScore, &choice, matrix);
         }
-        if (choice == 2) { //quit
+        if (choice == 2) { // quit
             break;
         }
-        if (choice == 3) { // daca revenim de la newGame
+        if (choice == 3) { // coming from new game
             choice = -1;
-            continue; // continuam bucla pentru a reapela menu
+            continue; // continuing the loop to recall the menu
         }
     }
     clear();
